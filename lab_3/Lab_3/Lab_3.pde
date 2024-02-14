@@ -48,10 +48,10 @@ float             L                                   = 0.09;
 float             rEE                                 = 0.006;
 
 /* virtual walls parameter  */ /*UPDATE AND CHANGE THESE FOR NEW SENSATIONS*/
-float             kSluggish                               = 45000;
+float             kShove                               = 90000;
 float             kWall                               = 80000;
-PVector           fWall                               = new PVector(0, 0);
-PVector           penSluggish                             = new PVector(0, 0);
+PVector           actingForce                               = new PVector(0, 0);
+PVector           Shove                             = new PVector(0, 0);
 PVector           penWall                             = new PVector(0, 0);
 PVector           posWall                             = new PVector(0.01, 0.03);
 float posWallBottom = .03;
@@ -72,6 +72,7 @@ PVector           fEE                                 = new PVector(0, 0);
 PVector           deviceOrigin                        = new PVector(0, 0);
 
 /* World boundaries reference */
+FWorld            world;
 final int         worldPixelWidth                     = 1000;
 final int         worldPixelHeight                    = 650;
 
@@ -129,6 +130,7 @@ void setup(){
   widgetOne.add_encoder(2, CW, -61, 10752, 1);
   
   widgetOne.device_set_parameters();
+ 
   
   /* setup simulation thread to run at 1kHz */ 
   SimulationThread st = new SimulationThread();
@@ -146,7 +148,7 @@ void draw(){
     fill(#000000);
     if(ffNum == FFNUM.ONE) {
       text("First mode", 500, 300);
-      fill(#000000);
+      //fill(#000000);
     } else if(ffNum == FFNUM.TWO) {
       text("Second mode", 500, 300);
       fill(#000000);
@@ -179,67 +181,101 @@ class SimulationThread implements Runnable{
       
       
       /* haptic wall force calculation */
-      fWall.set(0, 0);
+      actingForce.set(0, 0);
 /* EXPERIENCE 1  **************************************************************************************************/      
       if(ffNum == FFNUM.ONE) {
         if(lastPosEE.x < 0){
         println(lastPosEE.x);
+        println(lastPosEE.y);
         println(worldPixelWidth/2);
-        penSluggish.set(lastPosEE);
-        penSluggish.sub(posEE);
-        fWall = fWall.add(penSluggish.mult(-kSluggish));    
-        fEE = (fWall.copy()).mult(-1);
+        Shove.set(lastPosEE);
+        Shove.sub(posEE);
+        actingForce = actingForce.add(Shove.mult(-kShove));    
+        //fEE = (actingForce.copy()).mult(-1);
+        fEE = PVector.mult(actingForce, -4);
         } 
         else{
         println(lastPosEE.x);
         println(worldPixelWidth/2);
-        penSluggish.set(lastPosEE);
-        penSluggish.sub(posEE);
-        fWall = fWall.add(penSluggish.mult(-kSluggish));    
-        fEE = (fWall.copy()).mult(1);}
+        Shove.set(lastPosEE);
+        Shove.sub(posEE);
+        actingForce = actingForce.add(Shove.mult(-kShove));    
+        fEE = (actingForce.copy()).mult(0);}
       }
 /* EXPERIENCE 2  **************************************************************************************************/      
       else if(ffNum == FFNUM.TWO) {
-        penWall.set(0, (posWallBottom - posEE.y));
-        
-        if(penWall.y < 0){
-          fWall = fWall.add(penWall.mult(-kWall));  
-        } 
-
-        penWall.set(posEE.x - posWallLeft, 0);
-      
-        if(penWall.x < 0){
-          fWall = fWall.add(penWall.mult(kWall));  
-        } 
-        
-        penWall.set(posWallRight - posEE.x, 0);
-      
-        if(penWall.x < 0){
-          fWall = fWall.add(penWall.mult(-kWall));  
+        if(posEE.x > -0.06 && posEE.x <= -0.05){
+          if(posEE.x > -0.06 && posEE.x <= -0.055) {
+          fEE.set(-3000,0);
+          }
+          else{
+          fEE.set(3000,0);
+          }
         }
-        
-        fEE = (fWall.copy()).mult(-1);
+        else if(posEE.x > -0.04 && posEE.x <= -0.03){
+          if(posEE.x > -0.04 && posEE.x <= -0.035) {
+          fEE.set(-3000,0);
+          }
+          else{
+          fEE.set(3000,0);
+          }
+        }
+        else if(posEE.x > -0.01 && posEE.x <= 0){
+          if(posEE.x > -0.01 && posEE.x <= -0.005) {
+          fEE.set(-3000,0);
+          }
+          else{
+          fEE.set(3000,0);
+          }
+        }
+        else if(posEE.x > 0.01 && posEE.x <= 0.02){
+          if(posEE.x > 0.01 && posEE.x <= 0.015) {
+          fEE.set(-3000,0);
+          }
+          else{
+          fEE.set(3000,0);
+          }
+        }
+        else if(posEE.x > 0.03 && posEE.x <= 0.04){
+          if(posEE.x > 0.03 && posEE.x <= 0.035) {
+          fEE.set(-3000,0);
+          }
+          else{
+          fEE.set(3000,0);
+          }
+        }
+        else if(posEE.x > 0.05 && posEE.x <= 0.06){
+          if(posEE.x > 0.03 && posEE.x <= 0.055) {
+          fEE.set(-3000,0);
+          }
+          else{
+          fEE.set(3000,0);
+          }
+        }
+        else{
+        fEE.set(0,0);
+        }
       } 
 /* EXPERIENCE 3  **************************************************************************************************/      
       else {
-        if(posEE.y < .08) {
-          fEE.set(0,5000);
-        } else if (posEE.y > .081){
-          fEE.set(0,-5000);
-        } else {
-          if(roboticLeft) {
-            if(posEE.x > -.01) {
-              fEE.set(-3000,0);    
-            } else {
-              roboticLeft = false;
-            }
-          } else {
-            if(posEE.x < .01) {
-              fEE.set(3000,0);    
-            } else {
-              roboticLeft = true;
-            }
+        if(posEE.y < 0.08 && posEE.y > 0.03 && posEE.x > -0.04 && posEE.x < 0.015){
+          println(posEE.x);
+          println(posEE.y);
+          if(posEE.y < 0.08 && posEE.y >= 0.05 && posEE.x > -0.04 && posEE.x < 0) {
+          fEE.set(-3000,3000);
           }
+          else if(posEE.y < 0.08 && posEE.y >= 0.05 && posEE.x > 0 && posEE.x <= 0.015){
+            fEE.set(3000,3000);
+          }
+          else if(posEE.y < 0.05 && posEE.y > 0.03 && posEE.x > 0 && posEE.x <= 0.015){
+          fEE.set(3000,-3000);
+          }
+          else{
+          fEE.set(-3000,-3000);
+          }
+        }
+        else{
+          fEE.set(0,0);
         }
       }
         

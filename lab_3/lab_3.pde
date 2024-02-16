@@ -251,7 +251,6 @@ class SimulationThread implements Runnable{
 
  /* AVOIDANCE  **************************************************************************************************/ 
     else{
-      println(posEE);
       PVector dist = PVector.sub(posEE, center);
       float max_force = 250;
       float rad = 0.05;

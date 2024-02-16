@@ -41,16 +41,8 @@ float             radsPerDegree                       = 0.01745;
 float             l                                   = 0.07;
 float             L                                   = 0.09;
 
-/* end effector radius in meters */
-float             rEE                                 = 0.006;
-
-/* virtual walls parameter */
-float             kShove                              = 90000;
-float             kWall                               = 80000;
+/* Forces and radial params */
 PVector           actingForce                         = new PVector(0, 0);
-PVector           Shove                               = new PVector(0, 0);
-PVector           penWall                             = new PVector(0, 0);
-PVector           posWall                             = new PVector(0.01, 0.10);
 
 float             min_x                               = -0.1;
 float             max_x                               = 0.1;
@@ -139,7 +131,9 @@ void setup(){
 void draw(){
   if(!renderingForce) {
     background(255);
-    text("Instructions:\nPress 1 for the first mode. \nBefore proceeding, please push the end effector back to its initial non-extended position. \nPress 2 for the second mode.\nThen, push the end effector back to its initial non-extended position. \nLastly, press 3 for the third mode. \nYou can press 1 again to go back to the first mode and stop the automatic motions in the third mode.", 100, 100);
+    text("*Haptic Experience Window*", 100, 75);
+    fill(#000000);
+    text("Instructions:\nEach of the three experiences below represents a single word. \nAs you interact with each experience, try to guess what word they represent. \nMake sure the mouse is focussed on the Haptic Experience Window. \nPress 1 for the first experience. \nPress 2 for the second experience. \nPress 3 for the third mode. \n \nI would suggest pressing 1 when you want to end, then closing the window.", 100, 100);
     fill(#000000);
     text("Current mode:", 300, 300);
     fill(#000000);
@@ -149,14 +143,14 @@ void draw(){
     } else if(ffNum == FFNUM.TWO) {
       text("Second mode", 500, 300);
       fill(#000000);
-      
-    }  else{
+    } else {
       text("Third mode", 500, 300);
-      fill(#000000);   
+      fill(#000000);
     }
   }
 }
 /* end draw section ****************************************************************************************************/
+
 
   
 /* simulation section **************************************************************************************************/

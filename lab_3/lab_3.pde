@@ -1,3 +1,5 @@
+//Code based off of https://medium.com/@leekenjen/canhap-501-winter-2023-lab-3-communicate-something-dc0899f05e
+
 
 /* library imports *****************************************************************************************************/ 
 import processing.serial.*;

@@ -78,7 +78,9 @@ PVector lastPosEE = new PVector(0,0);
 enum FFNUM {
   ONE,
   TWO,
-  THREE
+  THREE,
+  FOUR,
+  FIVE
 };
 
 FFNUM ffNum = FFNUM.ONE;
@@ -145,8 +147,14 @@ void draw(){
     } else if(ffNum == FFNUM.TWO) {
       text("Second mode", 500, 300);
       fill(#000000);
-    } else {
+    } else if(ffNum == FFNUM.THREE) {
       text("Third mode", 500, 300);
+      fill(#000000);
+    }else if(ffNum == FFNUM.FOUR){
+      text("Fourth mode", 500, 300);
+      fill(#000000);
+    }else {
+      text("Fifth mode", 500, 300);
       fill(#000000);
     }
   }
@@ -246,7 +254,7 @@ class SimulationThread implements Runnable{
     }
 
  /* AVOIDANCE  **************************************************************************************************/ 
-    else{
+    else if(ffNum == FFNUM.THREE){
       PVector dist = PVector.sub(posEE, center);
       float max_force = 250;
       float rad = 0.05;
@@ -263,7 +271,43 @@ class SimulationThread implements Runnable{
         fEE.mult((float)force_value);
       }
     }
-            
+    
+/* NOISE **************************************************************************************************/  
+    else if(ffNum == FFNUM.FOUR){
+      float scale = 10;
+      float perlin_noise = noise(posEE.x, posEE.y);
+      float magnitude = 5 + perlin_noise * scale + random(-2, 2); 
+      float direction = perlin_noise * TWO_PI + random(-PI/4, PI/4);
+      
+      // Create a force vector 
+      float forceX = magnitude * cos(direction);
+      float forceY = magnitude * sin(direction);
+      PVector forceVector = new PVector(forceX, forceY);
+      println(forceVector);
+      fEE.set(forceVector);
+    }
+
+/* SANDPAPER **************************************************************************************************/ 
+    else{
+      //if end effector moved
+      if (posEE.dist(lastPosEE) > 0.0001) { 
+        float scale = 10;
+        float perlin_noise = noise(posEE.x, posEE.y);
+        float magnitude = 5 + perlin_noise * scale + random(-2, 2);
+        float direction = perlin_noise * TWO_PI + random(-PI/4, PI/4);
+        
+        // Create a force vector
+        float forceX = magnitude * cos(direction);
+        float forceY = magnitude * sin(direction);
+        PVector forceVector = new PVector(forceX, forceY);
+        println(forceVector);
+        fEE.set(forceVector);
+      }
+      else{
+        fEE.set(0,0);
+      }
+    }    
+        
     fEE.set(graphics_to_device(fEE));
     /* end haptic wall force calculation */
     }
@@ -296,6 +340,10 @@ void keyPressed() {
     ffNum = FFNUM.TWO;
   } else if(key == '3') {
     ffNum = FFNUM.THREE;
+  } else if(key == '4') {
+    ffNum = FFNUM.FOUR;
+  } else if(key == '5'){
+    ffNum = FFNUM.FIVE;
   }
 }
 

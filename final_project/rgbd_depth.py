@@ -29,21 +29,20 @@ try:
 
         # apply smoothing
         depth_smoothed = cv2.GaussianBlur(corrected_colour, (3, 3), 0)
-        
         cv2.imshow("Depth Image", depth_smoothed)
+
+        #normalize grayscale for texture 
+        norm_img = (grayscale_img - grayscale_img.min()) / (grayscale_img.max() - grayscale_img.min())
         
         # create folder
         save_folder = "depth_images"
         if not os.path.exists(save_folder):
             os.makedirs(save_folder)
 
-        # Save the depth image
+        # save images
         cv2.imwrite(os.path.join(save_folder, "depth_image.png"), depth_smoothed)
         cv2.imwrite(os.path.join(save_folder, "regular_image.png"), colour_img)
         cv2.imwrite(os.path.join(save_folder, "grayscale_image.png"), grayscale_img)
-
-        #normalize grayscale for texture
-        norm_img = (grayscale_img - grayscale_img.min()) / (grayscale_img.max() - grayscale_img.min())
 
         # exit with q key press 
         if cv2.waitKey(1) & 0xFF == ord('q'):
